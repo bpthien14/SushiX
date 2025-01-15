@@ -152,6 +152,41 @@ CREATE TABLE customers (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Bảng tài khoản khách hàng
+CREATE TABLE customer_accounts (
+    account_id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(customer_id),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    last_login TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bảng refresh token cho khách hàng
+CREATE TABLE customer_refresh_tokens (
+    token_id SERIAL PRIMARY KEY,
+    account_id INTEGER REFERENCES customer_accounts(account_id),
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    is_revoked BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_active_token UNIQUE(account_id, token)
+);
+
+-- Bảng lịch sử đăng nhập của khách hàng
+CREATE TABLE customer_login_history (
+    history_id SERIAL PRIMARY KEY,
+    account_id INTEGER REFERENCES customer_accounts(account_id),
+    login_time TIMESTAMP NOT NULL,
+    logout_time TIMESTAMP,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    status VARCHAR(20) CHECK (status IN ('SUCCESS', 'FAILED')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE membership_cards (
     card_id SERIAL PRIMARY KEY,
     customer_id INTEGER REFERENCES customers(customer_id),
@@ -394,16 +429,16 @@ CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_branch_date ON orders(branch_id, order_date);
 
 -- Tạo role cho nhân viên
-CREATE ROLE branch_staff;
+--CREATE ROLE branch_staff;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO branch_staff;
 GRANT INSERT, UPDATE ON orders, order_details TO branch_staff;
 
 -- Tạo role cho quản lý chi nhánh
-CREATE ROLE branch_manager;
+--CREATE ROLE branch_manager;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO branch_manager;
 
 -- Tạo role cho admin
-CREATE ROLE system_admin;
+--CREATE ROLE system_admin;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO system_admin;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO system_admin;
 
@@ -667,4 +702,5 @@ CREATE INDEX idx_employees_email ON employees(email);
 CREATE INDEX idx_employees_role ON employees(role);
 CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
 CREATE INDEX idx_login_history_employee ON login_history(employee_id, login_time);
+CREATE INDEX idx_refresh_tokens_lookup ON customer_refresh_tokens(token, is_revoked);
 

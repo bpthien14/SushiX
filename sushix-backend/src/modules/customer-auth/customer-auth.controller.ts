@@ -38,13 +38,17 @@ export class CustomerAuthController {
     return this.customerAuthService.getProfile(req.user.id);
   }
 
-  @UseGuards(CustomerJwtGuard)
   @Post('refresh')
-  @HttpCode(HttpStatus.OK)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Refresh JWT token' })
-  @ApiResponse({ status: 200, description: 'Return new JWT token' })
-  async refreshToken(@Request() req) {
-    return this.customerAuthService.refreshToken(req.user.id);
+  @ApiOperation({ summary: 'Refresh access token' })
+  async refresh(@Body('refresh_token') refreshToken: string) {
+    return this.customerAuthService.refreshToken(refreshToken);
+  }
+
+  @UseGuards(CustomerJwtGuard)
+  @Post('logout')
+  @ApiOperation({ summary: 'Logout customer' })
+  async logout(@Request() req) {
+    await this.customerAuthService.logout(req.user.id);
+    return { message: 'Logged out successfully' };
   }
 } 

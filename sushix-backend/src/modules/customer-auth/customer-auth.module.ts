@@ -7,10 +7,15 @@ import { CustomerAuthService } from './customer-auth.service';
 import { CustomerAccount } from './entities/customer-account.entity';
 import { Customer } from '../../modules/customers/entities/customer.entity';
 import { CustomerJwtStrategy } from './strategies/customer-jwt.strategy';
+import { CustomerRefreshToken } from './entities/customer-refresh-token.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CustomerAccount, Customer]),
+    TypeOrmModule.forFeature([
+      CustomerAccount, 
+      Customer, 
+      CustomerRefreshToken
+    ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
