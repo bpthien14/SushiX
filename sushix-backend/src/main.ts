@@ -8,9 +8,8 @@ async function bootstrap() {
 
   // Cấu hình global pipes
   app.useGlobalPipes(new ValidationPipe({
-    transform: true,
     whitelist: true,
-    forbidNonWhitelisted: true,
+    transform: true,
   }));
   // Cấu hình Swagger
   const config = new DocumentBuilder()

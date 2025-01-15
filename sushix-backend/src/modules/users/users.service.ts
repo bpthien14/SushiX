@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Employee } from './entities/user.entity';
+import { Employee } from './entities/employee.entity';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -15,20 +18,72 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<Employee> {
-    return this.employeeRepository.findOne({ where: { employee_id: id } });
+    const employee = await this.employeeRepository.findOne({ 
+      where: { employee_id: id } 
+    });
+    
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${id} not found`);
+    }
+    
+    return employee;
   }
 
-  async create(employee: Partial<Employee>): Promise<Employee> {
-    const newEmployee = this.employeeRepository.create(employee);
-    return this.employeeRepository.save(newEmployee);
+  async findByEmail(email: string): Promise<Employee> {
+    const user = await this.employeeRepository.findOne({ 
+      where: { email },
+      select: {
+        employee_id: true,
+        email: true,
+        password: true,
+        role: true,
+        first_name: true,
+        last_name: true,
+        is_active: true
+      }
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User not found with email ${email}`);
+    }
+
+    if (!user.is_active) {
+      throw new UnauthorizedException('User is inactive');
+    }
+
+    return user;
   }
 
-  async update(id: number, employee: Partial<Employee>): Promise<Employee> {
-    await this.employeeRepository.update(id, employee);
-    return this.employeeRepository.findOne({ where: { employee_id: id } });
+  async create(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
+    const hashedPassword = await bcrypt.hash(createEmployeeDto.password, 10);
+    const employee = this.employeeRepository.create({
+      ...createEmployeeDto,
+      password: hashedPassword,
+    });
+    return this.employeeRepository.save(employee);
   }
 
-  async delete(id: number): Promise<void> {
-    await this.employeeRepository.delete(id);
+  async update(id: number, updateEmployeeDto: UpdateEmployeeDto): Promise<Employee> {
+    const employee = await this.employeeRepository.preload({
+      employee_id: id,
+      ...updateEmployeeDto,
+    });
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${id} not found`);
+    }
+
+    if (updateEmployeeDto.password) {
+      employee.password = await bcrypt.hash(updateEmployeeDto.password, 10);
+    }
+
+    return this.employeeRepository.save(employee);
   }
-}
+
+  async remove(id: number): Promise<void> {
+    const result = await this.employeeRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Employee with ID ${id} not found`);
+    }
+  }
+} 
