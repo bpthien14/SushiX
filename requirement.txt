@@ -1,0 +1,94 @@
+- Mô tả gợi ý:
+Hệ thống nhà hàng SuShiX gồm 15 chi nhánh trải rộng ở một số thành phố (Hồ Chí
+Minh, Hà Nội, Đà Nẵng...), với sự tin yêu của khách hàng, trong tương lai có khả năng
+phát triển và mở rộng trên toàn quốc. Mỗi chi nhánh có tên chi nhánh, địa chỉ, thời
+gian mở cửa, đóng cửa, số điện thoại chi nhánh, cần ghi nhận mỗi chi nhánh có bãi đỗ
+xe máy, xe hơi hay không. Thực đơn món ăn tuỳ theo khu vực, tuy nhiên, mỗi chi
+nhánh thuộc khu vực có thể ghi nhận có/không đang phục vụ món. Thực đơn được
+chia thành nhiều mục, mỗi mục gồm nhiều món cụ thể như: Khai vị (gồm các món
+như: trứng hấp, súp miso, súp chay, trứng cá hồi...); Sashimi combo (gồm các set
+combo về cá sống như: sashimi tổng hợp, sashimi cá hồi đặc biệt...); Nigiri (là các loại
+cơm cuộn như: cá ngừ (2 miếng), cá hồi (2 miếng), lườn cá hồi nướng sốt (2
+miếng)...); Và nhiều mục khác như: tempura, udon, hotpot, lunch set, các món
+nước....Mỗi món có mã món, tên món, giá hiện tại. Khách hàng có thể đăng ký thẻ
+thành viên miễn phí bằng cách cung cấp các thông tin như: họ tên, số điện thoại,
+email, số cccd, giới tính. Nhân viên chi nhánh sẽ lập thẻ cho khách hàng với 1 mã số
+thẻ cụ thể, ngày lập, nhân viên lập. Đăng ký thẻ giúp khách hàng được hưởng ưu đãi
+chiết khấu, giảm giá, tặng sản phẩm tùy theo chương trình.Thẻ khách hàng gồm 3
+loại: thẻ thành viên, thẻ silver và thẻ gold, khi mới đăng kí khách hàng sẽ thuộc loại
+thẻ thành viên. Khách hàng muốn được nâng cấp lên loại thẻ silver và thẻ gold cần
+phải đạt tiêu chuẩn như sau:
+o Thẻ SILVER:
+▪ Điều kiện ĐẠT hạng thẻ SILVER: có tổng giá trị tiêu dùng tích lũy từ
+10.000.000 VNĐ (100 điểm).
+▪ Điều kiện GIỮ hạng thẻ SILVER: có tổng giá trị tiêu dùng tích lũy từ
+5.000.000 VNĐ (50 điểm) trong vòng 01 năm kể từ ngày đạt thẻ
+SILVER.
+▪ Điều kiện NÂNG hạng thẻ GOLD: có tổng giá trị tiêu dùng tích lũy từ
+10.000.000 VNĐ (100 điểm) trong vòng 01 năm kể từ ngày đạt thẻ
+SILVER.
+▪ Nếu trong vòng 01 năm kể từ ngày đạt thẻ SILVER có tổng giá trị tiêu
+dùng tích lũy dưới 5.000.000 VNĐ (50 điểm): thẻ sẽ trở lại mức ban
+đầu là Membership
+
+o Thẻ GOLD
+▪ Điều kiện ĐẠT hạng thẻ GOLD: có tổng giá trị tiêu dùng tích lũy từ
+10.000.000 VNĐ (100 điểm) trong vòng 01 năm kể từ ngày đạt thẻ
+SILVER.
+
+▪ Điều kiện GIỮ hạng thẻ GOLD: có tổng giá trị tiêu dùng tích lũy từ
+10.000.000 VNĐ (100 điểm) trong vòng 01 năm kể từ ngày đạt thẻ
+GOLD.
+▪ Nếu trong vòng 01 năm kể từ ngày đạt thẻ GOLD có tổng giá trị tiêu
+dùng tích lũy dưới 10.000.000 VNĐ (100 điểm): thẻ sẽ xuống hạng
+SILVER
+
+- Nếu khách hàng làm mất thẻ, có thể liên hệ để đóng thẻ cũ và cấp thẻ mới. Đối với
+khách mua hàng trực tiếp tại cửa hàng, nhân viên sẽ hỗ trợ đặt món cho khách hàng,
+nhân viên sẽ chọn bàn, tạo phiếu đặt món. Thông tin phiếu đặt gồm mã phiếu, ngày
+lập, nhân viên lập, lập cho bàn nào. Sau đó, chọn các món ăn theo yêu cầu của khách
+hàng và số lượng cho mỗi món. Nếu khách có yêu cầu thêm món, nhân viên sẽ bổ
+sung thêm thông tin vào phiếu đặt món đã tạo. Khi khách hàng cần thanh toán, nhân
+viên sẽ xuất hoá đơn thanh toán cho khách hàng. Lưu ý, cần hiển thị rõ trên hoá đơn
+tổng tiền, số tiền được giảm nếu có sử dụng thẻ thành viên. Dựa vào tổng tiền tiêu
+dùng (sau khi đã giảm) trên hoá đơn, hệ thống sẽ tích luỹ cộng dồn điểm vào thẻ
+khách hàng: 1 điểm tương ứng 100.000 VNĐ. Sau khi thanh toán hoá đơn, nhân viên
+sẽ nhờ khách hàng hỗ trợ đánh giá dịch vụ (điểm phục vụ, điểm vị trí chi nhánh,
+điểm chất lượng món ăn, điểm giá cả, điểm về không gian nhà hàng, hoặc để lại bình
+luận...). Đối với khách mua hàng trực tuyến, hệ thống ghi nhận thêm thời điểm truy
+cập, thời gian truy cập nhằm cải thiện trải nghiệm của khách hàng. Khách hàng có thể
+đặt bàn qua số điện thoại chi nhánh hoặc qua website: lựa chọn khu vực, lựa chọn
+nhà hàng, số lượng khách, ngày đặt, giờ đến, một số ghi chú khác. Khách có thể đặt
+trước 1 số món kèm số lượng tương ứng để nhà hàng chuẩn bị sẵn nhằm tiết kiệm
+thời gian chờ đợi. Nhân viên chi nhánh sẽ kiểm tra thường xuyên các đơn hàng trực
+tuyến, gọi điện xác nhận với khách hàng về ngày giờ, số lượng, cũng như xác nhận lại
+danh sách đặt món và bổ sung thêm món nếu khách có yêu cầu. Ngoài ra, hệ thống
+còn có dịch vụ giao hàng tận nơi ở một số chi nhánh, tuy nhiên, một số món ngoại lệ
+không hỗ trợ giao vì không đảm bảo giữ được chất lượng.
+Hệ thống gồm nhiều nhân viên: thông tin nhân viên gồm mã nhân viên, họ tên, ngày
+sinh, giới tính, lương, ngày vào làm, ngày nghỉ việc, bộ phận phụ trách, chi nhánh
+đang làm việc, địa chỉ gồm số điện thoại, số nhà, đường, phường, quận, thành phố. Hệ
+thống có các bộ phận: bếp, lễ tân, phục vụ bàn, thu ngân, quản lý...Mỗi nhân viên làm
+việc tại 1 bộ phận của chi nhánh, mỗi bộ phận có nhiều nhân viên. Nhân viên thuộc
+cùng bộ phận thì có mức lương như nhau. Mỗi chi nhánh có 1 nhân viên quản lý chi
+nhánh. Công ty có thể điều động nhân viên qua làm một chi nhánh khác, cần ghi nhận
+lịch sử làm việc tại mỗi chi nhánh của mỗi nhân viên: ngày bắt đầu làm, ngày kết thúc
+làm.
+Một số gợi ý yêu cầu thống kê dữ liệu như sau:
+- Cấp chi nhánh:
+o xem doanh thu mỗi ngày/mỗi tháng/ mỗi quý / mỗi năm
+o xem danh sách nhân viên, điểm phục vụ của mỗi nhân viên cuối mỗi
+ngày/tháng/quý/năm
+o tìm kiếm thông tin nhân viên, xem danh sách nhân viên theo chi nhánh
+
+o Thêm/xoá/cập nhật phiếu đặt món; tìm kiếm hoá đơn theo khách hàng, theo
+ngày
+o Thêm/xoá/cập nhật thông tin thẻ khách hàng
+o ....
+- Cấp công ty:
+o xem thống kê doanh thu từng chi nhánh mỗi ngày/tháng/quý/năm
+o thống kê doanh thu theo từng món, món chạy nhất, món bán chậm nhất trong
+1 khoảng thời gian cụ thể theo chi nhánh, khu vực
+o Chuyển nhân sự của các chi nhánh.
+o Cập nhật lương nhân viên, thêm/xoá/cập nhật thông tin nhân viên
+o ....
