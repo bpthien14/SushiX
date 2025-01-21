@@ -33,11 +33,7 @@ export class CustomerAuthService {
 
     // Tạo customer mới
     const customer = this.customerRepository.create({
-      full_name: registerDto.full_name,
-      phone: registerDto.phone,
-      email: registerDto.email,
-      id_number: registerDto.id_number,
-      gender: registerDto.gender,
+      ...registerDto
     });
     await this.customerRepository.save(customer);
 
@@ -177,7 +173,7 @@ export class CustomerAuthService {
   async logout(customerId: number) {
     // Revoke tất cả refresh token của user
     await this.refreshTokenRepository.update(
-      { customer_id: customerId, is_revoked: false },
+      { account_id: customerId, is_revoked: false },
       { is_revoked: true }
     );
   }
