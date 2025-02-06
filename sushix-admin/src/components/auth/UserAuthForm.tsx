@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
 import { cn } from '../../lib/utils'
 import { Button } from '../ui/button'
+import { useAuth } from '../../contexts/auth'
 import {
   Form,
   FormControl,
@@ -21,20 +22,17 @@ type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
 const formSchema = z.object({
   email: z
     .string()
-    .min(1, { message: 'Please enter your email' })
-    .email({ message: 'Invalid email address' }),
+    .min(1, { message: 'Vui lòng nhập email' })
+    .email({ message: 'Email không hợp lệ' }),
   password: z
     .string()
-    .min(1, {
-      message: 'Please enter your password',
-    })
-    .min(7, {
-      message: 'Password must be at least 7 characters long',
-    }),
+    .min(1, { message: 'Vui lòng nhập mật khẩu' })
+    .min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' }),
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const { login } = useAuth()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,14 +42,17 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
-
-    setTimeout(() => {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      setIsLoading(true)
+      await login(data.email, data.password)
+    } catch (error) {
+      form.setError('root', {
+        message: 'Email hoặc mật khẩu không đúng'
+      })
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
@@ -66,7 +67,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 <FormItem className='space-y-1'>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder='name@example.com' {...field} />
+                    <Input placeholder='admin@example.com' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -78,17 +79,24 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               render={({ field }) => (
                 <FormItem className='space-y-1'>
                   <div className='flex items-center justify-between'>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Mật khẩu</FormLabel>
                   </div>
                   <FormControl>
-                    <PasswordInput placeholder='********' {...field} />
+                    <PasswordInput placeholder='••••••••' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {form.formState.errors.root && (
+              <p className="text-sm text-red-500">
+                {form.formState.errors.root.message}
+              </p>
+            )}
+
             <Button className='mt-2' disabled={isLoading}>
-              Login
+              {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
             </Button>
 
             <div className='relative my-2'>
@@ -97,7 +105,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               </div>
               <div className='relative flex justify-center text-xs uppercase'>
                 <span className='bg-background px-2 text-muted-foreground'>
-                  Or continue with
+                  Hoặc đăng nhập với
                 </span>
               </div>
             </div>

@@ -2,13 +2,15 @@ import { AreaChart, Card, Title } from "@tremor/react"
 
 const chartdata = [
   {
-    date: "Jan 22",
-    Revenue: 2890000,
+    "time_period": "2024-01-01T00:00:00.000Z",
+    "total_revenue": 1500000,
+    "total_orders": 25
   },
   {
-    date: "Feb 22",
-    Revenue: 3200000,
-  },
+    "time_period": "2024-01-02T00:00:00.000Z", 
+    "total_revenue": 1800000,
+    "total_orders": 30
+  }
   // Thêm dữ liệu các tháng khác...
 ]
 
@@ -17,15 +19,20 @@ export function RevenueChart() {
     <AreaChart
       className="h-72 mt-4"
       data={chartdata}
-      index="date"
-      categories={["Revenue"]}
+      index="time_period"
+      categories={["total_revenue"]}
       colors={["blue"]}
+
       valueFormatter={(number) => 
-        new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(number)
+        // Chuyển đổi sang triệu đồng
+        `${(number / 1000000).toFixed(1)}M`
       }
+      yAxisWidth={60} // Tăng độ rộng trục y
+      showAnimation={true}
+      showLegend={false}
+      showGridLines={false}
+      showYAxis={true}
+      autoMinValue={true} // Tự động điều chỉnh giá trị min
     />
   )
 } 

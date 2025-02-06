@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Get, Request }
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -38,5 +38,15 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh JWT token' })
   async refresh(@Request() req) {
     return this.authService.refreshToken(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout admin user' })
+  @ApiResponse({ status: 200, description: 'Logout successful' })
+  async logout(@Request() req) {
+    return this.authService.logout(req.user.id);
   }
 } 

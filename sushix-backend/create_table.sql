@@ -1,4 +1,3 @@
-
 -- Tạo ENUM cho role của nhân viên
 CREATE TYPE employee_role_enum AS ENUM (
     'SYSTEM_ADMIN',    -- Quản trị viên hệ thống (cấp công ty)
@@ -703,4 +702,105 @@ CREATE INDEX idx_employees_role ON employees(role);
 CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
 CREATE INDEX idx_login_history_employee ON login_history(employee_id, login_time);
 CREATE INDEX idx_refresh_tokens_lookup ON customer_refresh_tokens(token, is_revoked);
+
+-- Function lấy doanh thu theo thời gian
+CREATE OR REPLACE FUNCTION get_revenue_by_time_range(
+    p_start_date DATE,
+    p_end_date DATE,
+    p_interval VARCHAR DEFAULT 'day' -- 'day', 'week', 'month', 'year'
+)
+RETURNS TABLE (
+    time_period TIMESTAMP,
+    total_revenue DECIMAL(10,2),
+    total_orders BIGINT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        CASE 
+            WHEN p_interval = 'day' THEN 
+                date_trunc('day', o.order_date)
+            WHEN p_interval = 'week' THEN 
+                date_trunc('week', o.order_date)
+            WHEN p_interval = 'month' THEN 
+                date_trunc('month', o.order_date)
+            ELSE 
+                date_trunc('year', o.order_date)
+        END AS time_period,
+        COALESCE(SUM(o.final_total), 0)::DECIMAL(10,2) as total_revenue,
+        COUNT(o.order_id)::BIGINT as total_orders
+    FROM orders o
+    WHERE o.status = 'COMPLETED'
+        AND DATE(o.order_date) BETWEEN p_start_date AND p_end_date
+    GROUP BY time_period
+    ORDER BY time_period ASC;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_all_branches_revenue(
+    p_start_date DATE,
+    p_end_date DATE
+)
+RETURNS TABLE (
+    total_revenue DECIMAL(15,2),
+    total_orders BIGINT,
+    total_branches BIGINT,
+    branches_data JSON
+) AS $$
+DECLARE
+    v_total_revenue DECIMAL(15,2);
+    v_total_orders BIGINT;
+    v_total_branches BIGINT;
+    v_branches_data JSON;
+BEGIN
+    -- Lấy tổng số chi nhánh
+    SELECT COUNT(*) INTO v_total_branches FROM branches;
+
+    -- Tính toán thống kê và tổng hợp kết quả
+    SELECT 
+        COALESCE(SUM(s.revenue), 0)::DECIMAL(15,2),
+        COALESCE(SUM(s.order_count), 0),
+        json_agg(
+            json_build_object(
+                'branch_id', s.branch_id,
+                'branch_name', s.branch_name,
+                'address', s.address,
+                'revenue', s.revenue,
+                'order_count', s.order_count,
+                'avg_order_value', s.avg_order_value
+            )
+        )
+    INTO 
+        v_total_revenue,
+        v_total_orders,
+        v_branches_data
+    FROM (
+        SELECT 
+            b.branch_id,
+            b.branch_name,
+            b.address,
+            COUNT(o.order_id) as order_count,
+            COALESCE(SUM(o.final_total), 0)::DECIMAL(15,2) as revenue,
+            CASE 
+                WHEN COUNT(o.order_id) > 0 
+                THEN (COALESCE(SUM(o.final_total), 0) / COUNT(o.order_id))::DECIMAL(15,2)
+                ELSE 0
+            END as avg_order_value
+        FROM branches b
+        LEFT JOIN orders o ON b.branch_id = o.branch_id
+            AND o.order_date::DATE BETWEEN p_start_date AND p_end_date
+            AND o.status = 'Completed'
+        GROUP BY b.branch_id, b.branch_name, b.address
+        ORDER BY b.branch_id
+    ) s;
+
+    -- Trả về kết quả
+    RETURN QUERY 
+    SELECT 
+        v_total_revenue,
+        v_total_orders,
+        v_total_branches,
+        COALESCE(v_branches_data, '[]'::json);
+END;
+$$ LANGUAGE plpgsql;
 

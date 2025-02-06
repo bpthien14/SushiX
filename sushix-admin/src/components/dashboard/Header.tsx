@@ -1,9 +1,16 @@
 import { useState } from 'react'
 import { BellIcon } from '@heroicons/react/24/outline'
 import { UserCircleIcon } from '@heroicons/react/24/solid'
+import { useAuth } from '../../contexts/auth'
 
 export function Header() {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const { user, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    setIsProfileOpen(false)
+  }
 
   return (
     <header className="bg-white shadow">
@@ -27,31 +34,31 @@ export function Header() {
             >
               <UserCircleIcon className="h-8 w-8 text-gray-400" />
               <span className="hidden md:block font-medium text-gray-700">
-                Admin User
+                {user?.name || 'Admin User'}
               </span>
             </button>
 
             {isProfileOpen && (
-              <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                 <div className="py-1">
-                  <a
-                    href="#profile"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  <button
+                    onClick={() => setIsProfileOpen(false)}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Thông tin cá nhân
-                  </a>
-                  <a
-                    href="#settings"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  </button>
+                  <button
+                    onClick={() => setIsProfileOpen(false)}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Cài đặt
-                  </a>
-                  <a
-                    href="#logout"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                   >
                     Đăng xuất
-                  </a>
+                  </button>
                 </div>
               </div>
             )}

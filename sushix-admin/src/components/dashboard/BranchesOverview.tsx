@@ -1,4 +1,5 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
+import { useWindowSize } from '../../hooks/useWindowSize'
 
 interface Branch {
   name: string;
@@ -38,6 +39,7 @@ const branchesByArea: Record<string, Branch[]> = {
 }
 
 export function BranchesOverview({ areaId }: BranchesOverviewProps) {
+  const { isMobile } = useWindowSize()
   const branches = areaId === 'all' 
     ? Object.values(branchesByArea).flat()
     : branchesByArea[areaId] || []
@@ -48,35 +50,38 @@ export function BranchesOverview({ areaId }: BranchesOverviewProps) {
         width='100%' height={350}>
         <BarChart
           data={branches}
-          layout="vertical"
-          margin={{ top: 0, right: 40, bottom: 0 }}
+          layout="horizontal"
+          margin={{ top: 20, right: 40, bottom: isMobile ? 60 : 20, left: 40 }}
         >
           <XAxis
-            xAxisId="revenue"
-            type="number"
-            orientation="bottom"
+            type="category"
+            dataKey="name"
+            stroke="#888888"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+            textAnchor={isMobile ? "end" : "middle"}
+            height={isMobile ? 60 : 30}
+            angle={isMobile ? -45 : 0}
+          />
+
+          <YAxis
+            yAxisId="revenue"
+            orientation="left"
             tickFormatter={(value) =>
               new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
               }).format(value)
             }
-          />
-
-          <XAxis
-            xAxisId="orders"
-            type="number"
-            orientation="top"
-            tickFormatter={(value) => `${value} đơn`}
+            stroke="#8884d8"
           />
 
           <YAxis
-            type="category"
-            dataKey='name'
-            stroke='#888888'
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
+            yAxisId="orders"
+            orientation="right"
+            tickFormatter={(value) => `${value} đơn`}
+            stroke="#82ca9d"
           />
 
           <Tooltip
@@ -97,17 +102,17 @@ export function BranchesOverview({ areaId }: BranchesOverviewProps) {
           />
 
           <Bar
-            xAxisId="revenue"
-            dataKey='Doanh thu'
-            fill='#8884d8'
-            radius={[0, 4, 4, 0]}
+            yAxisId="revenue"
+            dataKey="Doanh thu"
+            fill="#8884d8"
+            radius={[4, 4, 0, 0]}
           />
 
           <Bar
-            xAxisId="orders"
-            dataKey='Đơn hàng'
-            fill='#82ca9d'
-            radius={[0, 4, 4, 0]}
+            yAxisId="orders"
+            dataKey="Đơn hàng"
+            fill="#82ca9d"
+            radius={[4, 4, 0, 0]}
           />
         </BarChart>
       </ResponsiveContainer>

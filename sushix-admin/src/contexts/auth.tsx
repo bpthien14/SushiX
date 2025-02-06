@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { ENDPOINTS } from '../lib/config'
 
 interface User {
   id: number
@@ -24,26 +25,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const location = useLocation()
 
   useEffect(() => {
-    // Kiểm tra token trong localStorage
     const token = localStorage.getItem('token')
     if (token) {
-      // TODO: Validate token với API
-      fetchUser()
+      fetchUser(token)
     } else {
       setIsLoading(false)
     }
   }, [])
 
-  const fetchUser = async () => {
+  const fetchUser = async (token: string) => {
     try {
-      // TODO: Gọi API để lấy thông tin user
-      const response = await fetch('/api/me', {
+      const response = await fetch(ENDPOINTS.PROFILE, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       })
-      const data = await response.json()
-      setUser(data)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user')
+      }
+      
+      const user = await response.json()
+      setUser(user)
     } catch (error) {
       console.error('Failed to fetch user:', error)
       logout()
@@ -54,22 +57,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      // TODO: Gọi API login
-      const response = await fetch('/api/login', {
+      const response = await fetch(ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       })
 
       if (!response.ok) {
-        throw new Error('Login failed')
+        throw new Error('Invalid credentials')
       }
 
-      const { token, user } = await response.json()
-      localStorage.setItem('token', token)
-      setUser(user)
+      const data = await response.json()
+      
+      const token = data.accessToken || data.access_token || data.token
 
-      // Redirect về trang trước đó hoặc dashboard
+      if (!token) {
+        throw new Error('No token received from server')
+      }
+
+      localStorage.setItem('token', token)
+      setUser(data.user)
+
       const origin = location.state?.from?.pathname || '/'
       navigate(origin)
     } catch (error) {
@@ -78,10 +86,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const logout = () => {
-    localStorage.removeItem('token')
-    setUser(null)
-    navigate('/login')
+  const logout = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      if (token) {
+        await fetch(ENDPOINTS.LOGOUT, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+      }
+    } catch (error) {
+      console.error('Logout failed:', error)
+    } finally {
+      localStorage.removeItem('token')
+      setUser(null)
+      navigate('/login')
+    }
   }
 
   return (
